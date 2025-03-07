@@ -57,8 +57,8 @@ const ToolDescription = styled.div`
 
 const ToolImageWrapper = styled.div`
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
 
   &::before {
     content: "";
@@ -84,8 +84,8 @@ const ToolImageWrapper = styled.div`
 `;
 
 const ToolImageContainer = styled.div`
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
@@ -180,13 +180,19 @@ const ToolNode = ({
   const [scale, setScale] = useState(1);
   const timeoutRef = useRef(null);
 
-  // Calculate initial position on a sphere
+  // Calculate initial position on a sphere with constraints to prevent extending too far left
   useEffect(() => {
     const phi = Math.acos(-1 + (2 * index) / totalNodes);
     const theta = Math.sqrt(totalNodes * Math.PI) * phi;
-    const x = 3 * Math.cos(theta) * Math.sin(phi);
-    const y = 3 * Math.sin(theta) * Math.sin(phi);
-    const z = 3 * Math.cos(phi);
+
+    // Increase radius to 3.2 to make orbit bigger and reduce overlapping
+    const radius = 3.2;
+    let x = radius * Math.cos(theta) * Math.sin(phi);
+    const y = radius * Math.sin(theta) * Math.sin(phi);
+    const z = radius * Math.cos(phi);
+
+    // Center the orbit horizontally
+    x += 0.3;
 
     meshRef.current.position.set(x, y, z);
     setRotation([x, y, z]);
@@ -205,19 +211,22 @@ const ToolNode = ({
   // Also calculate scale based on z position (distance from camera)
   useFrame((state) => {
     const time = state.clock.getElapsedTime() * 0.1;
+
+    // Apply rotation with constraints
     const x = rotation[0] * Math.cos(time) - rotation[2] * Math.sin(time);
     const z = rotation[0] * Math.sin(time) + rotation[2] * Math.sin(time);
 
-    meshRef.current.position.x = x;
+    // Apply position with constraints to prevent going too far left or right
+    meshRef.current.position.x = x + 0.3; // Reduced offset for better centering
     meshRef.current.position.z = z;
 
-    // Calculate scale based on z position
+    // Calculate scale based on z position with reduced scaling effect
     // When z is closer to the camera (larger value), make the description smaller
-    const distanceFromCamera = 8 - z; // Camera is at z=8
-    // Increase the minimum scale to 0.85 (was 0.7)
+    const distanceFromCamera = 9 - z; // Camera is at z=9
+    // Reduce the scaling effect to make tools appear smaller when close to camera
     const newScale = Math.max(
-      0.85,
-      Math.min(1, 1 - (distanceFromCamera - 5) * 0.05)
+      0.8,
+      Math.min(0.95, 0.95 - (distanceFromCamera - 6) * 0.03)
     );
     setScale(newScale);
 
@@ -323,10 +332,10 @@ const ToolsOrb = () => {
 
   return (
     <OrbContainer>
-      <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
+      <Canvas camera={{ position: [0.3, 0, 9], fov: 55 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
-        <group>
+        <group position={[0.3, 0, 0]}>
           {toolsData.map((tool, index) => (
             <ToolNode
               key={tool.name}
