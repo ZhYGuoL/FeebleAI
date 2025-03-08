@@ -100,10 +100,6 @@ const GlobalStyles = createGlobalStyle`
     padding: 0 20px;
   }
 
-  .highlight {
-    color: var(--primary);
-    font-weight: 700;
-  }
   
   .section-title {
     text-align: center;
@@ -146,6 +142,12 @@ const GlobalStyles = createGlobalStyle`
   .page-transition-exit-active {
     opacity: 0;
     transition: opacity 500ms;
+  }
+
+  .highlight {
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
   }
 `;
 

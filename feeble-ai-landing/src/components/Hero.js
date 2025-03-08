@@ -1,16 +1,12 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useEffect, useRef, useState } from "react";
+import styled, { keyframes } from "styled-components";
 import ToolsOrb from "./ToolsOrb";
 
 const HeroSection = styled.section`
   padding: 160px 0 100px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 214, 51, 0.05) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background-color: #fffffe;
 `;
 
 const HeroContainer = styled.div`
@@ -37,20 +33,106 @@ const HeroContent = styled.div`
   }
 `;
 
+const fadeInUp = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
 const HeroTitle = styled.h1`
   margin-bottom: 24px;
   font-size: 4rem;
   line-height: 1.1;
+  position: relative;
+
+  .line-mask {
+    overflow: hidden;
+    display: block;
+  }
+
+  .line {
+    display: block;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .line.animated {
+    animation: ${fadeInUp} 0.8s ease-out forwards;
+  }
+
+  .line.first {
+    animation-delay: 0s;
+  }
+
+  .line.second {
+    animation-delay: 0.2s;
+  }
+
+  .line.third {
+    animation-delay: 0.4s;
+  }
+
+  .highlight {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+  }
 
   @media (max-width: 768px) {
     font-size: 3rem;
   }
 `;
 
+const highlightAnimation = keyframes`
+  0% {
+    width: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 96%;
+    opacity: 1;
+  }
+`;
+
+const HighlightBox = styled.span`
+  position: absolute;
+  height: 70%;
+  background-color: var(--primary);
+  bottom: -19px;
+  left: 8%;
+  z-index: -1;
+  width: 0;
+  opacity: 0;
+  animation: ${highlightAnimation} 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)
+    forwards;
+  animation-delay: 0.5s;
+  animation-play-state: ${(props) => (props.animated ? "running" : "paused")};
+`;
+
 const HeroSubtitle = styled.p`
   font-size: 1.25rem;
   margin-bottom: 40px;
   color: var(--text-light);
+  opacity: 0;
+
+  &.animated {
+    animation: ${fadeIn} 0.8s ease-out forwards;
+    animation-delay: 0.7s;
+  }
 
   @media (max-width: 768px) {
     font-size: 1.1rem;
@@ -60,6 +142,12 @@ const HeroSubtitle = styled.p`
 const HeroButtons = styled.div`
   display: flex;
   gap: 20px;
+  opacity: 0;
+
+  &.animated {
+    animation: ${fadeIn} 0.8s ease-out forwards;
+    animation-delay: 0.9s;
+  }
 
   @media (max-width: 992px) {
     justify-content: center;
@@ -113,20 +201,75 @@ const HeroVisual = styled.div`
 `;
 
 const Hero = () => {
+  const highlightRef = useRef(null);
+  const textRef = useRef(null);
+  const [animated, setAnimated] = useState(false);
+
+  useEffect(() => {
+    // Start animation when content becomes visible
+    const checkVisibility = () => {
+      if (document.body.classList.contains("content-visible")) {
+        // Start animations immediately without delay
+        setAnimated(true);
+        return true;
+      }
+      return false;
+    };
+
+    // Check immediately in case content is already visible
+    if (!checkVisibility()) {
+      // If not visible yet, set up an interval to check
+      const intervalId = setInterval(() => {
+        if (checkVisibility()) {
+          clearInterval(intervalId);
+        }
+      }, 100);
+
+      // Clean up interval
+      return () => clearInterval(intervalId);
+    }
+  }, []);
+
+  // Split the title into lines for the animation
+  const titleLines = ["Automate the parts of your", "business that matter."];
+
   return (
     <HeroSection>
       <HeroContainer>
         <HeroContent>
           <HeroTitle>
-            automate the parts of your business that{" "}
-            <span className="highlight">matter.</span>
+            {titleLines.map((line, index) => (
+              <span key={index} className="line-mask">
+                <span
+                  className={`line ${animated ? "animated" : ""} ${
+                    index === 0 ? "first" : "second"
+                  }`}
+                >
+                  {index === 1 ? (
+                    <>
+                      business that{" "}
+                      <span
+                        className="highlight"
+                        ref={textRef}
+                        style={{ color: "inherit", position: "relative" }}
+                      >
+                        matter.
+                        <HighlightBox ref={highlightRef} animated={animated} />
+                      </span>
+                    </>
+                  ) : (
+                    line
+                  )}
+                </span>
+              </span>
+            ))}
           </HeroTitle>
-          <HeroSubtitle>
+          <HeroSubtitle className={animated ? "animated" : ""}>
             We help businesses streamline their operations through intelligent
             automation solutions that save time, reduce errors, and increase
             productivity.
           </HeroSubtitle>
-          <HeroButtons>
+          <HeroButtons className={animated ? "animated" : ""}>
             <PrimaryButton href="#contact">Get Started</PrimaryButton>
             <SecondaryButton href="#process">Learn More</SecondaryButton>
           </HeroButtons>

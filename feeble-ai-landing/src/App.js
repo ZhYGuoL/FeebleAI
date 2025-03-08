@@ -16,7 +16,9 @@ function App() {
     // This adds a tiny delay after the overlay animation starts to disappear
     const timer = setTimeout(() => {
       setShowContent(true);
-    }, 800);
+      // Add a class to the body to indicate content is visible
+      document.body.classList.add("content-visible");
+    }, 6000);
 
     return () => clearTimeout(timer);
   }, []);

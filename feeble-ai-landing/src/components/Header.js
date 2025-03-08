@@ -73,6 +73,7 @@ const NavLink = styled.a`
   font-weight: 500;
   position: relative;
   padding: 5px 0;
+  font-size: 1.05rem;
 
   &::after {
     content: "";
@@ -94,14 +95,17 @@ const NavLink = styled.a`
   }
 `;
 
-const Button = styled.button`
+const Button = styled.a`
   background-color: var(--primary);
   color: var(--secondary);
   padding: 10px 20px;
   border-radius: 4px;
-  font-weight: 600;
+  font-weight: 700;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(255, 214, 51, 0.3);
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
 
   &:hover {
     transform: translateY(-2px);
@@ -150,7 +154,7 @@ const Header = () => {
         <Nav>
           <NavLink href="#process">Our Process</NavLink>
           <NavLink href="#team">Team</NavLink>
-          <Button>Contact Us</Button>
+          <Button href="#contact">Contact Us</Button>
         </Nav>
         <MobileMenuButton aria-label="Menu">
           <svg

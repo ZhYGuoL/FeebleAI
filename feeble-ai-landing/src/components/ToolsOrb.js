@@ -10,7 +10,7 @@ const OrbContainer = styled.div`
   height: 600px;
   margin: 0 auto;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
 
   @media (max-width: 768px) {
     height: 500px;
@@ -77,9 +77,9 @@ const ToolImageWrapper = styled.div`
     transition: all 0.4s ease;
     z-index: -1;
     opacity: ${(props) => (props.hovered ? 1 : 0)};
-    transform: scale(${(props) => (props.hovered ? 1.5 : 1)});
+    transform: scale(${(props) => (props.hovered ? 1.2 : 1)});
     box-shadow: ${(props) =>
-      props.hovered ? "0 0 20px 5px rgba(255, 214, 51, 0.6)" : "none"};
+      props.hovered ? "0 0 12px 3px rgba(255, 214, 51, 0.4)" : "none"};
   }
 `;
 
@@ -93,7 +93,7 @@ const ToolImageContainer = styled.div`
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  transform: ${(props) => (props.hovered ? "scale(1.1)" : "scale(1)")};
+  transform: ${(props) => (props.hovered ? "scale(1.05)" : "scale(1)")};
   cursor: pointer;
   position: relative;
   z-index: 1;
@@ -102,14 +102,14 @@ const ToolImageContainer = styled.div`
   &::after {
     content: "";
     position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
     border-radius: 50%;
     background: transparent;
-    border: 2px solid
-      rgba(255, 214, 51, ${(props) => (props.hovered ? 0.8 : 0)});
+    border: 1px solid
+      rgba(255, 214, 51, ${(props) => (props.hovered ? 0.6 : 0)});
     transition: all 0.3s ease;
     z-index: -1;
   }
@@ -119,7 +119,7 @@ const ToolImageContainer = styled.div`
     max-height: 80%;
     object-fit: contain;
     transition: transform 0.3s ease;
-    transform: ${(props) => (props.hovered ? "scale(1.1)" : "scale(1)")};
+    transform: ${(props) => (props.hovered ? "scale(1.05)" : "scale(1)")};
   }
 `;
 
@@ -185,8 +185,8 @@ const ToolNode = ({
     const phi = Math.acos(-1 + (2 * index) / totalNodes);
     const theta = Math.sqrt(totalNodes * Math.PI) * phi;
 
-    // Increase radius to 3.2 to make orbit bigger and reduce overlapping
-    const radius = 3.2;
+    // Reduce radius to keep tools within the container
+    const radius = 2.8;
     let x = radius * Math.cos(theta) * Math.sin(phi);
     const y = radius * Math.sin(theta) * Math.sin(phi);
     const z = radius * Math.cos(phi);
@@ -217,17 +217,34 @@ const ToolNode = ({
     const z = rotation[0] * Math.sin(time) + rotation[2] * Math.sin(time);
 
     // Apply position with constraints to prevent going too far left or right
-    meshRef.current.position.x = x + 0.3; // Reduced offset for better centering
-    meshRef.current.position.z = z;
+    // Constrain x position to stay within bounds
+    const constrainedX = Math.max(-2.5, Math.min(2.5, x + 0.3));
+    meshRef.current.position.x = constrainedX;
 
-    // Calculate scale based on z position with reduced scaling effect
-    // When z is closer to the camera (larger value), make the description smaller
+    // Constrain z position to stay within bounds
+    const constrainedZ = Math.max(-2.5, Math.min(2.5, z));
+    meshRef.current.position.z = constrainedZ;
+
+    // Calculate scale based on z position with improved scaling logic
+    // When z is closer to the camera (larger value), make the tool smaller
     const distanceFromCamera = 9 - z; // Camera is at z=9
-    // Reduce the scaling effect to make tools appear smaller when close to camera
-    const newScale = Math.max(
-      0.8,
-      Math.min(0.95, 0.95 - (distanceFromCamera - 6) * 0.03)
-    );
+
+    // New scaling logic:
+    // - Tools close to camera (small distance) will be scaled down more aggressively
+    // - Tools far from camera maintain their normal size
+    let newScale = 1;
+
+    if (distanceFromCamera < 6) {
+      // Far from camera - maintain normal size (0.9-1.0)
+      newScale = Math.max(
+        0.9,
+        Math.min(1, 1 - (distanceFromCamera - 5) * 0.02)
+      );
+    } else {
+      // Close to camera - scale down more aggressively (0.7-0.9)
+      newScale = Math.max(0.7, 0.9 - (distanceFromCamera - 6) * 0.1);
+    }
+
     setScale(newScale);
 
     // Update description position if node is hovered
@@ -332,7 +349,7 @@ const ToolsOrb = () => {
 
   return (
     <OrbContainer>
-      <Canvas camera={{ position: [0.3, 0, 9], fov: 55 }}>
+      <Canvas camera={{ position: [0.3, 0, 8], fov: 50 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
         <group position={[0.3, 0, 0]}>
