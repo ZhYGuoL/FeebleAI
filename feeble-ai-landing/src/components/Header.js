@@ -2,21 +2,30 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 const HeaderContainer = styled.header`
-  padding: 20px 0;
+  padding: 16px 0;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  background-color: rgba(255, 255, 255, 0.98);
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   z-index: 100;
-  box-shadow: 0 2px 10px var(--shadow);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-top: none;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 
   ${(props) =>
     props.scrolled &&
     `
     padding: 15px 0;
-    box-shadow: 0 5px 20px var(--shadow);
+    background-color: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-top: none;
   `}
 `;
 
@@ -24,7 +33,6 @@ const HeaderContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 `;
@@ -98,15 +106,16 @@ const NavLink = styled.a`
 const Button = styled.a`
   background-color: var(--primary);
   color: var(--secondary);
-  padding: 10px 20px;
-  border-radius: 4px;
+  padding: 12px 24px;
+  border-radius: 5px;
   font-weight: 700;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(255, 214, 51, 0.3);
   display: inline-block;
   text-align: center;
   white-space: nowrap;
-
+  font-weight: bold;
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(255, 214, 51, 0.4);

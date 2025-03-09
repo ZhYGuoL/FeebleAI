@@ -5,15 +5,21 @@ import styled from "styled-components";
 import { toolsData } from "../assets/images";
 
 const OrbContainer = styled.div`
-  width: 100%;
-  max-width: 1200px;
+  width: 120%;
+  max-width: none;
   height: 600px;
-  margin: 0 auto;
+  margin: 0;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  margin-left: -15%;
+  margin-right: -15%;
+  margin-bottom: -100px;
 
   @media (max-width: 768px) {
-    height: 500px;
+    height: 600px;
+    width: 100%;
+    margin-left: 0;
+    margin-bottom: -50px;
   }
 `;
 
@@ -57,59 +63,67 @@ const ToolDescription = styled.div`
 
 const ToolImageWrapper = styled.div`
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 50px;
   height: 50px;
 
   &::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+      ${(props) => (props.hovered ? "scale(1.2)" : "scale(1)")};
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     background: radial-gradient(
       circle,
-      rgba(255, 214, 51, 0) 0%,
-      rgba(255, 214, 51, 0) 50%,
-      rgba(255, 214, 51, 0) 100%
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0) 100%
     );
     transition: all 0.4s ease;
     z-index: -1;
-    opacity: ${(props) => (props.hovered ? 1 : 0)};
-    transform: scale(${(props) => (props.hovered ? 1.2 : 1)});
+    opacity: ${(props) => (props.hovered ? 1 : 0.7)};
     box-shadow: ${(props) =>
-      props.hovered ? "0 0 12px 3px rgba(255, 214, 51, 0.4)" : "none"};
+      props.hovered ? "0 0 12px 3px rgba(255, 255, 255, 0.6)" : "none"};
   }
 `;
 
 const ToolImageContainer = styled.div`
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.9);
   transition: all 0.3s ease;
   transform: ${(props) => (props.hovered ? "scale(1.05)" : "scale(1)")};
   cursor: pointer;
   position: relative;
   z-index: 1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.1),
+    -6px -6px 12px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.05);
 
   &::after {
     content: "";
     position: absolute;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% + 6px);
+    height: calc(100% + 6px);
     border-radius: 50%;
     background: transparent;
     border: 1px solid
-      rgba(255, 214, 51, ${(props) => (props.hovered ? 0.6 : 0)});
+      rgba(255, 255, 255, ${(props) => (props.hovered ? 0.9 : 0.6)});
     transition: all 0.3s ease;
     z-index: -1;
   }
@@ -185,7 +199,7 @@ const ToolNode = ({
     const phi = Math.acos(-1 + (2 * index) / totalNodes);
     const theta = Math.sqrt(totalNodes * Math.PI) * phi;
 
-    // Reduce radius to keep tools within the container
+    // Restore original radius for proper orbit rotation
     const radius = 2.8;
     let x = radius * Math.cos(theta) * Math.sin(phi);
     const y = radius * Math.sin(theta) * Math.sin(phi);
@@ -216,14 +230,18 @@ const ToolNode = ({
     const x = rotation[0] * Math.cos(time) - rotation[2] * Math.sin(time);
     const z = rotation[0] * Math.sin(time) + rotation[2] * Math.sin(time);
 
-    // Apply position with constraints to prevent going too far left or right
+    // Restore original y rotation calculation
+    const y = rotation[1];
+
+    // Apply position with constraints to prevent going too far in any direction
     // Constrain x position to stay within bounds
     const constrainedX = Math.max(-2.5, Math.min(2.5, x + 0.3));
-    meshRef.current.position.x = constrainedX;
+    // Constrain y position to stay within bounds but allow more movement
+    const constrainedY = Math.max(-2.5, Math.min(2.5, y));
 
-    // Constrain z position to stay within bounds
-    const constrainedZ = Math.max(-2.5, Math.min(2.5, z));
-    meshRef.current.position.z = constrainedZ;
+    meshRef.current.position.x = constrainedX;
+    meshRef.current.position.y = constrainedY;
+    meshRef.current.position.z = z;
 
     // Calculate scale based on z position with improved scaling logic
     // When z is closer to the camera (larger value), make the tool smaller
@@ -232,17 +250,17 @@ const ToolNode = ({
     // New scaling logic:
     // - Tools close to camera (small distance) will be scaled down more aggressively
     // - Tools far from camera maintain their normal size
-    let newScale = 1;
+    let newScale = 0.85; // Keep the smaller scale for better appearance
 
     if (distanceFromCamera < 6) {
-      // Far from camera - maintain normal size (0.9-1.0)
+      // Far from camera - maintain smaller size (0.75-0.85)
       newScale = Math.max(
-        0.9,
-        Math.min(1, 1 - (distanceFromCamera - 5) * 0.02)
+        0.75,
+        Math.min(0.85, 0.85 - (distanceFromCamera - 5) * 0.02)
       );
     } else {
-      // Close to camera - scale down more aggressively (0.7-0.9)
-      newScale = Math.max(0.7, 0.9 - (distanceFromCamera - 6) * 0.1);
+      // Close to camera - scale down more aggressively (0.6-0.75)
+      newScale = Math.max(0.6, 0.75 - (distanceFromCamera - 6) * 0.1);
     }
 
     setScale(newScale);
@@ -287,9 +305,9 @@ const ToolNode = ({
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[0.4, 32, 32]} />
+      <sphereGeometry args={[0.35, 32, 32]} />
       <meshStandardMaterial
-        color={hovered ? "#FFD633" : "#FFFFFF"}
+        color={hovered ? "#FFFFFF" : "#F8F8F8"}
         transparent
         opacity={0}
       />
@@ -349,7 +367,7 @@ const ToolsOrb = () => {
 
   return (
     <OrbContainer>
-      <Canvas camera={{ position: [0.3, 0, 8], fov: 50 }}>
+      <Canvas camera={{ position: [0.3, 0, 9], fov: 45 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
         <group position={[0.3, 0, 0]}>
@@ -366,8 +384,8 @@ const ToolsOrb = () => {
         </group>
       </Canvas>
 
-      {/* Render descriptions outside the Canvas */}
-      <Descriptions activeNodes={activeNodes} />
+      {/* Temporarily commented out descriptions */}
+      {/* <Descriptions activeNodes={activeNodes} /> */}
     </OrbContainer>
   );
 };

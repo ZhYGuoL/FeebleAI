@@ -5,12 +5,13 @@ import ToolsOrb from "./ToolsOrb";
 const HeroSection = styled.section`
   padding: 160px 0 100px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   background-color: #fffffe;
+  margin-bottom: 50px;
 `;
 
 const HeroContainer = styled.div`
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
@@ -26,7 +27,8 @@ const HeroContainer = styled.div`
 
 const HeroContent = styled.div`
   flex: 1;
-  max-width: 600px;
+  max-width: 650px;
+  width: 100%;
 
   @media (max-width: 992px) {
     max-width: 100%;
@@ -55,9 +57,10 @@ const fadeIn = keyframes`
 
 const HeroTitle = styled.h1`
   margin-bottom: 24px;
-  font-size: 4rem;
+  font-size: 3.8rem;
   line-height: 1.1;
   position: relative;
+  white-space: nowrap;
 
   .line-mask {
     overflow: hidden;
@@ -68,6 +71,7 @@ const HeroTitle = styled.h1`
     display: block;
     opacity: 0;
     transform: translateY(30px);
+    white-space: nowrap;
   }
 
   .line.animated {
@@ -92,8 +96,22 @@ const HeroTitle = styled.h1`
     display: inline-block;
   }
 
+  @media (max-width: 992px) {
+    font-size: 3.5rem;
+    white-space: normal;
+
+    .line {
+      white-space: normal;
+    }
+  }
+
   @media (max-width: 768px) {
     font-size: 3rem;
+    white-space: normal;
+
+    .line {
+      white-space: normal;
+    }
   }
 `;
 
@@ -103,7 +121,7 @@ const highlightAnimation = keyframes`
     opacity: 1;
   }
   100% {
-    width: 96%;
+    width: 59%;
     opacity: 1;
   }
 `;
@@ -113,7 +131,7 @@ const HighlightBox = styled.span`
   height: 70%;
   background-color: var(--primary);
   bottom: -19px;
-  left: 8%;
+  left: 44%;
   z-index: -1;
   width: 0;
   opacity: 0;
@@ -198,6 +216,9 @@ const HeroVisual = styled.div`
   display: flex;
   justify-content: center;
   position: relative;
+  overflow: visible;
+  min-width: 50%;
+  margin-right: -30px;
 `;
 
 const Hero = () => {
@@ -230,8 +251,8 @@ const Hero = () => {
     }
   }, []);
 
-  // Split the title into lines for the animation
-  const titleLines = ["Automate the parts of your", "business that matter."];
+  // Split the title into lines for the animation as requested
+  const titleLines = ["Automate the parts", "of your business", "that matter."];
 
   return (
     <HeroSection>
@@ -242,21 +263,18 @@ const Hero = () => {
               <span key={index} className="line-mask">
                 <span
                   className={`line ${animated ? "animated" : ""} ${
-                    index === 0 ? "first" : "second"
+                    index === 0 ? "first" : index === 1 ? "second" : "third"
                   }`}
                 >
-                  {index === 1 ? (
-                    <>
-                      business that{" "}
-                      <span
-                        className="highlight"
-                        ref={textRef}
-                        style={{ color: "inherit", position: "relative" }}
-                      >
-                        matter.
-                        <HighlightBox ref={highlightRef} animated={animated} />
-                      </span>
-                    </>
+                  {index === 2 ? (
+                    <span
+                      className="highlight"
+                      ref={textRef}
+                      style={{ color: "inherit", position: "relative" }}
+                    >
+                      {line}
+                      <HighlightBox ref={highlightRef} animated={animated} />
+                    </span>
                   ) : (
                     line
                   )}
