@@ -13,7 +13,7 @@ const HeaderContainer = styled.header`
   z-index: 100;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-  border: 2px solid rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(255, 255, 255, 0.8);
   border-top: none;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
@@ -24,7 +24,7 @@ const HeaderContainer = styled.header`
     padding: 15px 0;
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.9);
+    border: 3 px solid rgba(255, 255, 255, 0.9);
     border-top: none;
   `}
 `;

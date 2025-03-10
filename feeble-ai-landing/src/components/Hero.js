@@ -3,25 +3,71 @@ import styled, { keyframes } from "styled-components";
 import ToolsOrb from "./ToolsOrb";
 
 const HeroSection = styled.section`
-  padding: 160px 0 100px;
+  padding: 150px 0 60px;
   position: relative;
-  overflow: visible;
-  background-color: #fffffe;
-  margin-bottom: 50px;
+  overflow: hidden;
+  background-color: #fdf8f2;
+  margin-bottom: 0px;
+  display: flex;
+  align-items: center;
+  min-height: 80vh;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: 1200px) {
+    padding: 150px 0 40px;
+    min-height: auto;
+  }
+
+  @media (max-width: 768px) {
+    30px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 150px 0 20px;
+  }
+`;
+
+const DotPattern = styled.div`
+  position: absolute;
+  right: 0;
+  width: 150%;
+  height: 200%;
+  rotate: -25deg;
+  z-index: 1;
+  pointer-events: none;
+  background-image: radial-gradient(#fff1e1 4px, transparent 4px);
+  background-size: 30px 30px;
+  opacity: 1;
 `;
 
 const HeroContainer = styled.div`
   max-width: 1300px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 500px;
+  box-sizing: border-box;
+  overflow: hidden;
 
-  @media (max-width: 992px) {
+  @media (max-width: 1200px) {
     flex-direction: column;
     text-align: center;
     gap: 60px;
+    min-height: auto;
+    padding: 0 15px;
+  }
+
+  @media (max-width: 768px) {
+    gap: 40px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 30px;
+    padding: 0 10px;
   }
 `;
 
@@ -29,9 +75,27 @@ const HeroContent = styled.div`
   flex: 1;
   max-width: 650px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0 10px;
+  position: relative;
+  z-index: 5;
 
-  @media (max-width: 992px) {
+  @media (max-width: 1200px) {
     max-width: 100%;
+    align-items: center;
+    padding: 0 20px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0 15px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 10px;
   }
 `;
 
@@ -61,6 +125,10 @@ const HeroTitle = styled.h1`
   line-height: 1.1;
   position: relative;
   white-space: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 
   .line-mask {
     overflow: hidden;
@@ -96,12 +164,14 @@ const HeroTitle = styled.h1`
     display: inline-block;
   }
 
-  @media (max-width: 992px) {
+  @media (max-width: 1200px) {
     font-size: 3.5rem;
     white-space: normal;
 
     .line {
       white-space: normal;
+      max-width: 100%;
+      overflow-wrap: break-word;
     }
   }
 
@@ -111,6 +181,15 @@ const HeroTitle = styled.h1`
 
     .line {
       white-space: normal;
+      max-width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.5rem;
+
+    .line {
+      max-width: 100%;
     }
   }
 `;
@@ -152,8 +231,19 @@ const HeroSubtitle = styled.p`
     animation-delay: 0.7s;
   }
 
+  @media (max-width: 1200px) {
+    font-size: 1.2rem;
+    margin-bottom: 35px;
+  }
+
   @media (max-width: 768px) {
     font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    margin-bottom: 25px;
   }
 `;
 
@@ -161,14 +251,18 @@ const HeroButtons = styled.div`
   display: flex;
   gap: 20px;
   opacity: 0;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
 
   &.animated {
     animation: ${fadeIn} 0.8s ease-out forwards;
     animation-delay: 0.9s;
   }
 
-  @media (max-width: 992px) {
+  @media (max-width: 1200px) {
     justify-content: center;
+    max-width: 100%;
   }
 
   @media (max-width: 576px) {
@@ -188,10 +282,18 @@ const PrimaryButton = styled.a`
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(255, 214, 51, 0.3);
+  white-space: nowrap;
+  text-align: center;
+  box-sizing: border-box;
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(255, 214, 51, 0.4);
+  }
+
+  @media (max-width: 576px) {
+    width: 100%;
+    padding: 12px 20px;
   }
 `;
 
@@ -204,10 +306,18 @@ const SecondaryButton = styled.a`
   font-weight: 600;
   border: 1px solid var(--border);
   transition: all 0.3s ease;
+  white-space: nowrap;
+  text-align: center;
+  box-sizing: border-box;
 
   &:hover {
     background-color: var(--background-alt);
     transform: translateY(-2px);
+  }
+
+  @media (max-width: 576px) {
+    width: 100%;
+    padding: 12px 20px;
   }
 `;
 
@@ -215,10 +325,38 @@ const HeroVisual = styled.div`
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   min-width: 50%;
-  margin-right: -30px;
+  max-width: 50%;
+  margin-right: 0;
+  margin-bottom: 0;
+  transform: translateY(-10px);
+  height: 650px;
+  box-sizing: border-box;
+  z-index: 10;
+
+  @media (max-width: 1200px) {
+    min-width: 100%;
+    max-width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+    transform: translateY(0);
+    height: 550px;
+    padding: 0;
+  }
+
+  @media (max-width: 768px) {
+    height: 500px;
+    transform: translateY(0);
+    padding: 0;
+  }
+
+  @media (max-width: 480px) {
+    height: 450px;
+    padding: 0;
+  }
 `;
 
 const Hero = () => {
@@ -256,6 +394,7 @@ const Hero = () => {
 
   return (
     <HeroSection>
+      <DotPattern />
       <HeroContainer>
         <HeroContent>
           <HeroTitle>
